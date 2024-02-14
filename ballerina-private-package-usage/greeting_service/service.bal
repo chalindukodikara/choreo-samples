@@ -15,7 +15,7 @@
 // under the License.
 
 import ballerina/http;
-import <your-organization-name>/greeting_lib;
+// import <your-organization-name>/greeting_lib;
 
 # A service representing a network-accessible API
 # bound to port `9090`.
@@ -24,8 +24,8 @@ service / on new http:Listener(9090) {
     # A resource for generating greetings
     # + name - the input string name
     # + return - string name with hello message or error
-    isolated resource function get greeting(string name) returns string|error {
+    isolated resource function get greeting(string name) returns string {
         // Return greetings from the private package
-        return greeting_lib:hello(name);
+        return "Hello";
     }
 }
