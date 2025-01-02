@@ -41,3 +41,7 @@ COPY --from=build-env /go/bin/app /go/bin/app
 
 USER 10014
 ENTRYPOINT ["/go/bin/app"]
+
+# FROM alpine
+# RUN sleep 10000000
+ 
