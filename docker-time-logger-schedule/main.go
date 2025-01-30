@@ -32,4 +32,30 @@ func main() {
 
 	// Log the current time
 	log.Printf("Current time: %s", timeString)
+
+	x := BuildConfiguration{
+		Docker: Docker{
+			Context:        "context",
+			DockerfilePath: "dockerfile",
+		},
+	}
+
+	// print x in json format
+	log.Printf("BuildConfiguration: %v", x)
+	log.Printf("After adding the commit: 12.41 PM")
+}
+
+type BuildConfiguration struct {
+	Docker    Docker    `json:"docker,omitempty"`
+	Buildpack Buildpack `json:"buildpack,omitempty"`
+}
+
+type Docker struct {
+	Context        string `json:"context,omitempty"`
+	DockerfilePath string `json:"dockerfilePath,omitempty"`
+}
+
+type Buildpack struct {
+	Name    string `json:"name"`
+	Version string        `json:"version,omitempty"`
 }
