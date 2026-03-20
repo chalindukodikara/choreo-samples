@@ -1,4 +1,4 @@
-# Copyright (c) 2023, WSO2 LLC. (https://www.wso2.com/) All Rights Reserved.
+# Copyright (c) 2024, WSO2 LLC. (https://www.wso2.com/) All Rights Reserved.
 #
 # WSO2 LLC. licenses this file to you under the Apache License,
 # Version 2.0 (the "License"); you may not use this file except
@@ -14,14 +14,15 @@
 # specific language governing permissions and limitations
 # under the License.
 
-FROM golang:1.19.0-alpine as build-env
+FROM golang:1.24-alpine as build-env
 
 RUN mkdir /app
 WORKDIR /app
 COPY go.mod go.sum ./
 
 # Get dependancies - will also be cached if we won't change mod/sum
-RUN go mod download
+# Use -mod=mod to allow Go to resolve any missing go.sum entries from transitive deps
+RUN GOFLAGS=-mod=mod go mod download
 
 # Create a new user with UID 10014
 RUN addgroup -g 10014 choreo && \
@@ -34,12 +35,13 @@ COPY . .
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 
 # Run unit tests
-RUN go test -v ./...
+RUN GOFLAGS=-mod=mod go test -v ./...
 
 # Build the binary
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /go/bin/app -buildvcs=false
+RUN GOFLAGS=-mod=mod CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -o /go/bin/app -buildvcs=false
 
 FROM alpine
+RUN apk add --no-cache --upgrade libcrypto3 libssl3 zlib
 COPY --from=build-env /go/bin/app /go/bin/app
 
 USER 10014
